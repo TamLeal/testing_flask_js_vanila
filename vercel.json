@@ -5,12 +5,9 @@
         "src": "index.html",
         "use": "@vercel/static-build",
         "config": {
-          "distDir": "."
+          "distDir": "dist"
         }
       }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "/" }
     ]
   }
   
