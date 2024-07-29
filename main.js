@@ -15,16 +15,15 @@ document
       formData.append('image', file);
 
       // Atualize o URL do backend para o endereço correto
-      fetch('https://backend-flask-js-vanila-p7jimpqk1-tams-projects-28fbceea.vercel.app/api/upload_image', {
+      fetch('https://backend-flask-js-vanila.vercel.app/api/upload_image', {
         method: 'POST',
         body: formData,
       })
         .then((response) => response.json())
         .then((data) => {
-          document.getElementById(
-            'dimensions'
-          ).textContent = `Width: ${data.width}px, Height: ${data.height}px`;
+          document.getElementById('dimensions').textContent = `Width: ${data.width}px, Height: ${data.height}px`;
         })
         .catch((error) => console.error('Error:', error));
+      
     }
   });
