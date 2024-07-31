@@ -8,26 +8,41 @@
 </head>
 <body>
     <div class="container">
-        <h1>Image Manager</h1>
-        <input type="file" id="imageInput" accept="image/*">
-        <div id="preview-container">
-            <img id="preview" src="" alt="Image Preview">
+        <div class="banner">
+            <h1>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Image Manager
+            </h1>
         </div>
-        <p id="dimensions"></p>
-        <p id="uploadStatus"></p>
-        <table id="imageTable">
-            <thead>
-                <tr>
-                    <th>Thumbnail</th>
-                    <th>URL</th>
-                    <th>Dimensions</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="imageTableBody">
-                <!-- Images will be added here dynamically -->
-            </tbody>
-        </table>
+        <div class="content">
+            <div class="left-panel">
+                <input type="file" id="imageInput" accept="image/*">
+                <div id="preview-container">
+                    <img id="preview" src="" alt="">
+                </div>
+                <p id="dimensions"></p>
+                <div id="uploadStatus" class="upload-status"></div>
+            </div>
+            <div class="right-panel">
+                <table id="imageTable">
+                    <thead>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Filename</th>
+                            <th>Dimensions</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="imageTableBody">
+                        <!-- Images will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <script type="module" src="main.js"></script>
 </body>

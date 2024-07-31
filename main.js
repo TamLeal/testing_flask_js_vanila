@@ -23,8 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function uploadImage(file) {
         const formData = new FormData();
         formData.append('image', file);
-
+    
+        const uploadStatus = document.getElementById('uploadStatus');
         uploadStatus.textContent = 'Uploading...';
+        uploadStatus.className = 'upload-status';
+        uploadStatus.style.display = 'block';
+    
         fetch('https://backend-flask-js-vanila.vercel.app/api/upload_image', {
             method: 'POST',
             body: formData,
@@ -35,19 +39,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error);
             }
             uploadStatus.textContent = 'Upload successful!';
+            uploadStatus.className = 'upload-status success';
             addImageToTable(data);
         })
         .catch(error => {
             console.error('Upload error:', error);
             uploadStatus.textContent = 'Error uploading image: ' + error.message;
+            uploadStatus.className = 'upload-status error';
         });
     }
 
     function addImageToTable(imageData) {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td><img src="${imageData.url}" alt="Thumbnail" width="50"></td>
-            <td><a href="${imageData.url}" target="_blank">${imageData.url}</a></td>
+            <td><a href="${imageData.url}" target="_blank"><img src="${imageData.url}" alt="${imageData.filename}"></a></td>
+            <td>${imageData.filename}</td>
             <td>${imageData.width || 'N/A'}px x ${imageData.height || 'N/A'}px</td>
             <td><button onclick="removeImage('${imageData.filename}')">Remove</button></td>
         `;
