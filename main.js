@@ -1,73 +1,97 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and parsed');
-  
     const imageInput = document.getElementById('imageInput');
     const preview = document.getElementById('preview');
     const dimensions = document.getElementById('dimensions');
-    const imageUrl = document.getElementById('imageUrl'); // Novo elemento para URL
-  
+    const imageTableBody = document.getElementById('imageTableBody');
+    const uploadStatus = document.getElementById('uploadStatus');
+
     imageInput.addEventListener('change', handleImageUpload);
-  
+
     function handleImageUpload(event) {
-        console.log('File input changed');
         const file = event.target.files[0];
         if (file) {
-            console.log('File selected:', file.name);
-  
             const reader = new FileReader();
             reader.onload = function (e) {
-                console.log('File read successfully');
                 preview.src = e.target.result;
-                console.log('Preview updated');
             };
             reader.readAsDataURL(file);
-  
+
             uploadImage(file);
-        } else {
-            console.log('No file selected');
         }
     }
-  
+
     function uploadImage(file) {
         const formData = new FormData();
         formData.append('image', file);
-        console.log('FormData created with file');
-  
-        console.log('Sending request to backend...');
+
+        uploadStatus.textContent = 'Uploading...';
         fetch('https://backend-flask-js-vanila.vercel.app/api/upload_image', {
             method: 'POST',
             body: formData,
         })
-        .then((response) => {
-            console.log('Response received:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
             }
-            return response.json();
+            uploadStatus.textContent = 'Upload successful!';
+            addImageToTable(data);
         })
-        .then((data) => {
-            console.log('Data received:', data);
-            if (data.width && data.height) {
-                dimensions.textContent = `Width: ${data.width}px, Height: ${data.height}px`;
-                console.log('Dimensions updated');
-            }
-            if (data.url) {
-                imageUrl.textContent = `Image URL: ${data.url}`;
-                imageUrl.href = data.url;
-                console.log('Image URL updated');
-            }
-        })
-        .catch((error) => {
-            console.error('Fetch error:', error);
-            dimensions.textContent = 'Error processing image';
+        .catch(error => {
+            console.error('Upload error:', error);
+            uploadStatus.textContent = 'Error uploading image: ' + error.message;
         });
     }
-  
-    // Check backend health
-    console.log('Checking backend health...');
-    fetch('https://backend-flask-js-vanila.vercel.app/api/health')
+
+    function addImageToTable(imageData) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><img src="${imageData.url}" alt="Thumbnail" width="50"></td>
+            <td><a href="${imageData.url}" target="_blank">${imageData.url}</a></td>
+            <td>${imageData.width || 'N/A'}px x ${imageData.height || 'N/A'}px</td>
+            <td><button onclick="removeImage('${imageData.filename}')">Remove</button></td>
+        `;
+        imageTableBody.appendChild(row);
+    }
+
+    window.removeImage = function(filename) {
+        fetch('https://backend-flask-js-vanila.vercel.app/api/remove_image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ filename: filename }),
+        })
         .then(response => response.json())
-        .then(data => console.log('Backend health check:', data))
-        .catch(error => console.error('Backend health check failed:', error));
-  });
-  
+        .then(data => {
+            if (data.success) {
+                const rows = imageTableBody.getElementsByTagName('tr');
+                for (let row of rows) {
+                    if (row.querySelector('button').getAttribute('onclick').includes(filename)) {
+                        imageTableBody.removeChild(row);
+                        break;
+                    }
+                }
+            } else {
+                console.error('Failed to remove image:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error removing image:', error);
+        });
+    }
+
+    loadExistingImages();
+
+    function loadExistingImages() {
+        fetch('https://backend-flask-js-vanila.vercel.app/api/get_images')
+        .then(response => response.json())
+        .then(images => {
+            imageTableBody.innerHTML = ''; // Clear existing rows
+            images.forEach(addImageToTable);
+        })
+        .catch(error => {
+            console.error('Error loading images:', error);
+        });
+    }
+});

@@ -3,18 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload</title>
+    <title>Image Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Upload an Image</h1>
+        <h1>Image Manager</h1>
         <input type="file" id="imageInput" accept="image/*">
         <div id="preview-container">
             <img id="preview" src="" alt="Image Preview">
         </div>
         <p id="dimensions"></p>
-        <a id="imageUrl" href="#" target="_blank"></a> <!-- Novo elemento para URL -->
+        <p id="uploadStatus"></p>
+        <table id="imageTable">
+            <thead>
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>URL</th>
+                    <th>Dimensions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="imageTableBody">
+                <!-- Images will be added here dynamically -->
+            </tbody>
+        </table>
     </div>
     <script type="module" src="main.js"></script>
 </body>
